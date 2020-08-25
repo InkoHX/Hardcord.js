@@ -1,5 +1,5 @@
 {
-  "name": "@inkohx/discord.js-command-handler",
+  "name": "@inkohx/discord.js-simple-command-handler",
   "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "https://github.com/InkoHX/discord.js-command-handler.git",

@@ -1,22 +1,9 @@
 import { Client as BaseClient, ClientOptions, Collection, Message } from 'discord.js'
-import parser from 'yargs-parser'
 
-export interface Argument {
-  commandName: string
-  args: Array<string | number>
-  flags: {
-    [key: string]: string | boolean | number
-  }
-}
-
-export interface Command extends Omit<Argument, 'commandName'> {
-  message: Message
-}
-
-export type CommandFunction = (command: Command) => Promise<void> | void
+import { CommandBuilder } from './CommandBuilder'
 
 export class Client extends BaseClient {
-  public readonly commands: Collection<string, CommandFunction> = new Collection()
+  public readonly commands: Collection<string, CommandBuilder> = new Collection()
   public readonly commandPrefix: string = '$>'
   public readonly ignoreMention: boolean = false
 
@@ -26,8 +13,8 @@ export class Client extends BaseClient {
     this.on('message', message => this._handleMessage(message))
   }
 
-  public addCommand(commandName: string, fnc: CommandFunction): this {
-    this.commands.set(commandName, fnc)
+  public addCommand(commandName: string, builder: CommandBuilder): this {
+    this.commands.set(commandName, builder)
 
     return this
   }
@@ -35,46 +22,24 @@ export class Client extends BaseClient {
   private _handleMessage(message: Message) {
     if (message.system || message.author.bot) return
 
-    const hasMention = !this.ignoreMention && new RegExp(`^<@!?${this.user!.id}>`).test(message.content)
+    const USER_MENTION_PATTERN = new RegExp(`^<@!?${this.user!.id}>`)
+
+    const hasMention = !this.ignoreMention && USER_MENTION_PATTERN.test(message.content)
     const hasCommandPrefix = message.content.startsWith(this.commandPrefix)
 
     if (!(hasMention || hasCommandPrefix)) return
 
-    const {
-      commandName,
-      args,
-      flags
-    } = this._parseContent(message.content)
-
-    const command = this.commands.get(commandName)
-
-    if (!command) return
-
-    try {
-      command({
-        args,
-        flags,
-        message
-      })
-    } catch (error) {
-      message.reply(error, { code: 'ts' })
-    }
-  }
-
-  private _parseContent(content: string): Argument {
-    const result = parser(content
-      .replace(new RegExp(`^<@!?${this.user!.id}>`), '')
+    const escapeContent = message.content
+      .replace(USER_MENTION_PATTERN, '')
       .replace(this.commandPrefix, '')
-    )
 
-    const commandName = String(result['_'][0])
-    const args = result['_'].slice(1).map(value => typeof value === 'string' ? value.replace(/^['"](.*)['"]$/, '$1') : value)
-    const flags = Object.fromEntries(Object.entries(result).filter(value => !Array.isArray(value[1])))
+    const commandNames = [...this.commands.keys()]
+      .filter(commandName => escapeContent.startsWith(commandName))
 
-    return {
-      commandName,
-      flags,
-      args
+    for (const commandName of commandNames) {
+      const command = this.commands.get(commandName)
+
+      command?.run(message)
     }
   }
 }

@@ -1,30 +1,46 @@
-# discord.js-command-handler
+# Hardcord.js
 
-This module can be used with Discord.js to create Discord bot commands easily.
+The goal is to create a lightweight command framework.
 
 ## Install
 
-Also, the package is not available to the public.
+**Also, the package is not available to the public.**
+
+### NPM
+
+```bash
+npm install hardcord.js discord.js
+```
+
+### Yarn
+
+```bash
+yarn add hardcord.js discord.js
+```
 
 ## Example
 
-```js
-const { Client } = require('@inkohx/discord.js-command-handler')
+```ts
+import { Client, CommandBuilder } from 'hardcord.js'
 
 const client = new Client()
 
-// Don't respond to Mentions.
 client.ignoreMention = true
-// command prefix to ">"
 client.commandPrefix = '>'
 
-client.addCommand('ping', ({
-  message,
-  flags,
-  args
-}) => {
-  message.reply('Pong!')
-})
+client.addCommand('ping', new CommandBuilder()
+  .toBoolean('bool') // add "--bool" flag
+  .setCommandHandler(({
+    message,
+    flags: {
+      bool
+    },
+    args
+  }) => {
+    console.log(bool, args)
+    // add your code
+  })
+)
 
 client.login()
 ```

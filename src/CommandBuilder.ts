@@ -107,11 +107,11 @@ export class CommandBuilder implements Builder {
   }
 
   // @ts-expect-error
-  count<K extends never>(key: K): Builder<Pick<{}, never> & { [key in K]: number }>
-  count<K extends string>(key: K): Builder<{ [key in K]: number }>
-  count<K extends never>(keys: readonly K[]): Builder<Pick<{}, never> & { [key in K]: number }>
-  count<K extends string>(keys: readonly K[]): Builder<{ [key in K]: number }>
-  count(keys: string | ReadonlyArray<string>) {
+  public count<K extends never>(key: K): Builder<Pick<{}, never> & { [key in K]: number }>
+  public count<K extends string>(key: K): Builder<{ [key in K]: number }>
+  public count<K extends never>(keys: readonly K[]): Builder<Pick<{}, never> & { [key in K]: number }>
+  public count<K extends string>(keys: readonly K[]): Builder<{ [key in K]: number }>
+  public count(keys: string | ReadonlyArray<string>) {
     if (typeof keys === 'string') this._counts.push(keys)
     else keys.forEach(key => this._counts.push(key))
 

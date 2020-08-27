@@ -12,6 +12,15 @@ export interface CommandHandlerArgument<F = {}> {
 export type CommandHandler<F = {}> = (args: CommandHandlerArgument<F>) => Promise<void> | void
 
 export interface Builder<F = {}> {
+  readonly _aliases: { [key: string]: string[] }
+  readonly _defaults: { [key: string]: any }
+  readonly _numbers: string[]
+  readonly _strings: string[]
+  readonly _booleans: string[]
+  readonly _arrays: string[]
+  readonly _counts: string[]
+  handler?: CommandHandler
+
   default<K extends keyof F, V = F[K]>(key: K, value: V): Builder<Omit<F, K> & { [key in K]: V }>
   default<K extends string, V>(key: K, value: V): Builder<F & { [key in K]: V }>
 
@@ -43,14 +52,14 @@ export interface Builder<F = {}> {
 }
 
 export class CommandBuilder implements Builder {
-  private readonly _aliases: { [key: string]: string[] } = {}
-  private readonly _defaults: { [key: string]: any } = {}
-  private readonly _numbers: string[] = []
-  private readonly _strings: string[] = []
-  private readonly _booleans: string[] = []
-  private readonly _arrays: string[] = []
-  private readonly _counts: string[] = []
-  private handler?: CommandHandler
+  readonly _aliases: { [key: string]: string[] } = {}
+  readonly _defaults: { [key: string]: any } = {}
+  readonly _numbers: string[] = []
+  readonly _strings: string[] = []
+  readonly _booleans: string[] = []
+  readonly _arrays: string[] = []
+  readonly _counts: string[] = []
+  handler?: CommandHandler
 
   public default<K extends never, V = {}[K]>(key: K, value: V): Builder<Pick<{}, never> & { [key in K]: V }>
   public default<K extends string, V>(key: K, value: V): Builder<{ [key in K]: V }>

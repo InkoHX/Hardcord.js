@@ -22,7 +22,7 @@ export class Client extends BaseClient {
   private _handleMessage(message: Message) {
     if (message.system || message.author.bot) return
 
-    const USER_MENTION_PATTERN = new RegExp(`^<@!?${this.user!.id}>`)
+    const USER_MENTION_PATTERN = new RegExp(`^<@!?${this.user!.id}> ?`)
 
     const hasMention = !this.ignoreMention && USER_MENTION_PATTERN.test(message.content)
     const hasCommandPrefix = message.content.startsWith(this.commandPrefix)

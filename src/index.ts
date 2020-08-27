@@ -33,13 +33,13 @@ export class Client extends BaseClient {
       .replace(USER_MENTION_PATTERN, '')
       .replace(this.commandPrefix, '')
 
-    const commandNames = [...this.commands.keys()]
-      .filter(commandName => escapeContent.startsWith(commandName))
+    const commandName = [...this.commands.keys()]
+      .find(commandName => escapeContent.startsWith(commandName))
 
-    for (const commandName of commandNames) {
-      const command = this.commands.get(commandName)
+    const command = commandName
+      ? this.commands.get(commandName)
+      : null
 
-      command?.run(message)
-    }
+    command?.run(message)
   }
 }

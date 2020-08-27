@@ -1,10 +1,8 @@
 # Hardcord.js
 
-The goal is to create a lightweight command framework.
+A command framework for Discord.js users.
 
 ## Install
-
-**Also, the package is not available to the public.**
 
 ### NPM
 
@@ -29,7 +27,7 @@ client.ignoreMention = true
 client.commandPrefix = '>'
 
 client.addCommand('ping', new CommandBuilder()
-  .boolean('bool') // add "--bool" flag
+  .boolean('bool') // "--bool" flag
   .setCommandHandler(({
     message,
     flags: {

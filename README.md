@@ -29,7 +29,7 @@ client.ignoreMention = true
 client.commandPrefix = '>'
 
 client.addCommand('ping', new CommandBuilder()
-  .toBoolean('bool') // add "--bool" flag
+  .boolean('bool') // add "--bool" flag
   .setCommandHandler(({
     message,
     flags: {

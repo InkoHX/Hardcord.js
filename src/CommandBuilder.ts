@@ -166,9 +166,13 @@ export class CommandBuilder implements Builder {
         flags,
         args
       })
-    } catch (error) {
-      message.reply(error, { code: 'ts' })
-      console.error(error)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        message.reply(error, { code: 'ts' })
+        console.error(error)
+      } else if (typeof error === 'string') {
+        message.reply(error)
+      } else throw error
     }
   }
 }

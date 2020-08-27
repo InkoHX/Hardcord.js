@@ -1,5 +1,6 @@
 {
-  "name": "@inkohx/discord.js-simple-command-handler",
+  "name": "hardcord.js",
+  "description": "A command framework for Discord.js users.",
   "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "https://github.com/InkoHX/discord.js-command-handler.git",

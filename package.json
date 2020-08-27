@@ -1,7 +1,7 @@
 {
   "name": "hardcord.js",
   "description": "A command framework for Discord.js users.",
-  "version": "1.0.1-alpha.0",
+  "version": "1.0.1-alpha.1",
   "main": "dist/index.js",
   "repository": "https://github.com/InkoHX/discord.js-command-handler.git",
   "author": "InkoHX <inkohx@gmail.com>",

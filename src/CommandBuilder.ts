@@ -1,8 +1,7 @@
 import { Message } from 'discord.js'
 import yargsParser from 'yargs-parser'
 
-import { Client } from '.'
-import { CommandError } from './CommandError'
+import { Client, CommandError } from '.'
 
 export interface CommandHandlerArgument<F = {}> {
   message: Message
@@ -13,15 +12,6 @@ export interface CommandHandlerArgument<F = {}> {
 export type CommandHandler<F = {}> = (args: CommandHandlerArgument<F>) => Promise<void> | void
 
 export interface Builder<F = {}> {
-  readonly _aliases: { [key: string]: string[] }
-  readonly _defaults: { [key: string]: any }
-  readonly _numbers: string[]
-  readonly _strings: string[]
-  readonly _booleans: string[]
-  readonly _arrays: string[]
-  readonly _counts: string[]
-  handler?: CommandHandler
-
   default<K extends keyof F, V = F[K]>(key: K, value: V): Builder<Omit<F, K> & { [key in K]: V }>
   default<K extends string, V>(key: K, value: V): Builder<F & { [key in K]: V }>
 
@@ -53,14 +43,14 @@ export interface Builder<F = {}> {
 }
 
 export class CommandBuilder implements Builder {
-  readonly _aliases: { [key: string]: string[] } = {}
-  readonly _defaults: { [key: string]: any } = {}
-  readonly _numbers: string[] = []
-  readonly _strings: string[] = []
-  readonly _booleans: string[] = []
-  readonly _arrays: string[] = []
-  readonly _counts: string[] = []
-  handler?: CommandHandler
+  private readonly _aliases: { [key: string]: string[] } = {}
+  private readonly _defaults: { [key: string]: any } = {}
+  private readonly _numbers: string[] = []
+  private readonly _strings: string[] = []
+  private readonly _booleans: string[] = []
+  private readonly _arrays: string[] = []
+  private readonly _counts: string[] = []
+  private handler?: CommandHandler
 
   public default<K extends never, V = {}[K]>(key: K, value: V): Builder<Pick<{}, never> & { [key in K]: V }>
   public default<K extends string, V>(key: K, value: V): Builder<{ [key in K]: V }>
@@ -137,6 +127,8 @@ export class CommandBuilder implements Builder {
   }
 
   public run(message: Message): void {
+    if (!this.handler) throw new CommandError('Use the "setCommandHandler" method to set the handler.')
+
     const client = message.client as Client
     const result = yargsParser(message.content
       .replace(new RegExp(`^<@!?${client.user!.id}>`), '')
@@ -160,8 +152,6 @@ export class CommandBuilder implements Builder {
     const flags = Object.fromEntries(Object.entries(result).filter(value => value[0] !== '_'))
 
     try {
-      if (!this.handler) throw new CommandError('Use the "setCommandHandler" method to set the handler.')
-
       this.handler({
         message,
         flags,

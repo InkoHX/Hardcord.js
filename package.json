@@ -10,7 +10,7 @@
     "prepublishOnly": "tsc"
   },
   "dependencies": {
-    "yargs-parser": "^19.0.1"
+    "yargs-parser": "^20.2.6"
   },
   "peerDependencies": {
     "discord.js": ">=12.3.0"

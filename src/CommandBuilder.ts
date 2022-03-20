@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { Formatters, Message } from 'discord.js'
 import yargsParser from 'yargs-parser'
 
 import { Client, CommandError } from '.'
@@ -135,7 +135,7 @@ export class CommandBuilder implements Builder {
     return this
   }
 
-  public run(message: Message): void {
+  public async run(message: Message): Promise<void> {
     if (!this.handler) throw new CommandError('Use the "setCommandHandler" method to set the handler.')
 
     const client = message.client as Client
@@ -161,18 +161,21 @@ export class CommandBuilder implements Builder {
     const flags = Object.fromEntries(Object.entries(result).filter(value => value[0] !== '_'))
 
     try {
-      this.handler({
+      await this.handler({
         message,
         flags,
         args
       })
     } catch (error: unknown) {
       if (error instanceof Error) {
-        message.reply(error, { code: 'ts' })
         console.error(error)
-      } else if (typeof error === 'string') {
-        message.reply(error)
-      } else throw error
+        await message.reply(Formatters.codeBlock('ts', String(error)))
+        return        
+      }
+      console.error('Thrown:', error)
+      if (typeof error === 'string') {
+        await message.reply(error)
+      }
     }
   }
 }

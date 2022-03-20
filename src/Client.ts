@@ -7,7 +7,7 @@ export class Client extends BaseClient {
   public readonly commandPrefix: string = '$>'
   public readonly ignoreMention: boolean = false
 
-  public constructor(options?: ClientOptions) {
+  public constructor(options: ClientOptions) {
     super(options)
 
     this.on('message', message => this._handleMessage(message))
@@ -40,6 +40,6 @@ export class Client extends BaseClient {
       ? this.commands.get(commandName)
       : null
 
-    command?.run(message)
+    command?.run(message).catch(console.error)
   }
 }
